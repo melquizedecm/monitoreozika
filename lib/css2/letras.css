@@ -1,0 +1,21 @@
+h2{
+	margin-bottom: 5px;
+	font-size: 20px;
+	border-bottom: .1px solid #DDD;
+	padding-bottom: 5px;
+	text-align: center;
+}
+.wrap{
+    opacity: 0.90;
+	padding: 25px;
+	margin: 0 auto;
+	width: 1000px;
+	background: #28B463 ;
+	border-radius: 30px;
+	margin-top: 10px;
+	border: 1px solid #797D7F;
+}
+
+body{
+	background: #99A3A4;
+}

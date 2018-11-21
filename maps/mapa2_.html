@@ -1,0 +1,133 @@
+<!DOCTYPE html >
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title> Mapa Geográfico de la dinámica infecciosa del Zika</title>
+    <style>
+        /* Siempre establezca la altura del mapa explícitamente para definir el tamaño de la div
+         * Elemento que contiene el mapa. */
+        #map {
+            height: 100%;
+        }
+        /* Opcional: hace que la página de muestra llene la ventana. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        footer
+	{
+	    background:#A4CFEE;
+            
+	}
+       
+       
+    </style>
+</head>
+<body style="background:#A4CFEE;">
+    <h1 align="center">Mapa Geográfico de la dinámica infecciosa del Zika</h1>
+    <div id="map"></div>
+    
+
+    <script>
+        var iconBase = 'https://kpumorales.000webhostapp.com/iconos/';
+        var icons = {
+            azul: {
+                icon: iconBase + 'azul.png'
+            },
+            amarillo: {
+                icon: iconBase + 'amarillo.png'
+            },
+            turqueza: {
+                icon: iconBase + 'turqueza.png'
+            },
+            verde: {
+                icon: iconBase + 'verde.png'
+            },
+            morado: {
+                icon: iconBase + 'morado.png'
+            },
+            rojo: {
+                icon: iconBase + 'rojo.png'
+            },
+           anaranjado: {
+               icon: iconBase + 'naranja3.png'
+          }
+        };
+//Funcion para Inicializar el mapa en la variable map. Definimos el centro del mapa,zoom para el enfoque y tipo de mapa.
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: new google.maps.LatLng(21.2125, -88.7617),
+                zoom: 8,
+                mapTypeId: 'terrain'
+            });
+            var infoWindow = new google.maps.InfoWindow;
+
+            // Cambie esto dependiendo del nombre de su archivo PHP o XML
+
+            downloadUrl('obtienemarkers.php', function (data) {
+                var xml = data.responseXML;
+                var markers = xml.documentElement.getElementsByTagName('marker');
+                Array.prototype.forEach.call(markers, function (markerElem) {
+                    var name = markerElem.getAttribute('name');
+                    var address = markerElem.getAttribute('address');
+                    var type = markerElem.getAttribute('type');
+                    var point = new google.maps.LatLng(
+                            parseFloat(markerElem.getAttribute('lat')),
+                            parseFloat(markerElem.getAttribute('lng')));
+                            
+                    //Llenamos la ventana de informacion que se mostrara al hacer click
+                    var infowincontent = document.createElement('div');
+                    var strong = document.createElement('strong');
+                    strong.textContent = name
+                    infowincontent.appendChild(strong);
+                    infowincontent.appendChild(document.createElement('br'));
+
+                    var text = document.createElement('text');
+                    text.textContent = address
+                    infowincontent.appendChild(text);
+                    //var icon = customLabel[type] || {};
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: point,
+                        icon: icons[type].icon
+                                //label: icon.label
+                    });//Agregar el listener para hacer click sobre el marker muestre la info
+                    marker.addListener('click', function () {
+                        infoWindow.setContent(infowincontent);
+                        infoWindow.open(map, marker);
+                    });
+                });
+            });
+        }
+//funcion para bajar el xml y manejarlo segun la url
+        function downloadUrl(url, callback) {
+            var request = window.ActiveXObject ?
+                    new ActiveXObject('Microsoft.XMLHTTP') :
+                    new XMLHttpRequest;
+
+            request.onreadystatechange = function () {
+                if (request.readyState == 4) {
+                    request.onreadystatechange = doNothing;
+                    callback(request, request.status);
+                }
+            };
+
+            request.open('GET', url, true);
+            request.send(null);
+        }
+        function doNothing() {}
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1k9ARMe-B3tUOfxClPl2G8u7OHnJMjus&callback=initMap">
+    </script>
+    <footer>
+        
+        Simbologia:<br>
+      <img src="icons/rojo.png" alt=""/> 100% <img src="icons/amarillo.png" alt=""/>80-89% <img src="icons/verde.png" alt=""/>70%-79% <img src="icons/turqueza.png" alt=""/>60-69% <img src="icons/morado.png" alt=""/>50-59%
+         
+          
+          
+    </footer>
+</body>
+</html>
